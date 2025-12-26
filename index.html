@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NetVision AI Enterprise</title>
+    <link rel="stylesheet" href="css/style.css?v=fix_ui_v2">
+    
+</head>
+<body>
+
+    <div class="toolbar">
+        <strong style="display:none;">NETVISION</strong>
+        <input type="text" id="targetId" placeholder="ID Máy Gửi" style="width: 120px;">
+        <button id="btnConnect" onclick="connect()">KẾT NỐI</button>
+        <label style="display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 12px;">
+            <input type="checkbox" id="chkControl"> Mouse
+        </label>
+        <span id="status" style="margin-left: 10px; font-size: 12px;">🔴</span>
+    </div>
+
+    <div id="screen-container">
+        <div id="waitingMsg" style="color:#666;">Sẵn sàng kết nối...</div>
+        <img id="remote-screen" onmousemove="sendMove(event)" onmousedown="sendClick(event)" />
+    </div>
+
+    <div id="ai-widget-btn" onclick="toggleChat()">✨</div>
+
+    <div id="ai-chat-box">
+        <div class="chat-header"><span>NETVISION AI</span><span onclick="toggleChat()">✖</span></div>
+        <div class="chat-body" id="chat-content">
+            <div class="chat-msg msg-ai">Chào! hãy chọn nút dưới để cắt vùng bạn cần OCR hoặc Hỏi AI</div>
+        </div>
+        <div class="chat-footer">
+            <button onclick="startSnippingMode()" style="width: 100%; background: #764ba2; color: white; padding: 12px; border-radius: 8px;">✂️ CẮT MÀN HÌNH</button>
+        </div>
+    </div>
+    
+    <div id="snipping-overlay" 
+         onmousedown="startDrag(event)" onmousemove="doDrag(event)" onmouseup="endDrag(event)"
+         ontouchstart="startDrag(event)" ontouchmove="doDrag(event)" ontouchend="endDrag(event)">
+        <div id="selection-box"></div>
+        <div id="action-bar">
+            <button id="btn-ocr" class="action-btn" onclick="requestHighResImage('OCR')">📄 Đọc Chữ</button>
+            <button id="btn-ai" class="action-btn" onclick="requestHighResImage('AI')">✨ Hỏi AI</button>
+        </div>
+    </div>
+
+    `n    <script src="js/main.js?v=fix_ui_v2"></script>
+</body>
+</html>
+
+
+
+

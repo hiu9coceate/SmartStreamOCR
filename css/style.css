@@ -1,0 +1,46 @@
+﻿/* --- FILE GIAO DIỆN (STYLE - FIXED) --- */
+body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; touch-action: none; }
+
+.toolbar { background: #2d2d2d; padding: 10px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #444; flex-shrink: 0; z-index: 500; }
+input, button { padding: 8px; border-radius: 4px; border: 1px solid #555; background: #333; color: white; font-size: 14px; }
+button { background: #007acc; border: none; cursor: pointer; font-weight: bold; }
+button:disabled { background: #555; }
+
+/* CONTAINER CHỨA VIDEO */
+#screen-container { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: #000; position: relative; overflow: hidden; z-index: 1; }
+#remote-screen { max-width: 100%; max-height: 100%; object-fit: contain; display: none; user-select: none; -webkit-user-drag: none; }
+
+/* NÚT AI WIDGET */
+#ai-widget-btn { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 9999; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; transition: transform 0.2s; }
+#ai-widget-btn:active { transform: scale(0.9); }
+
+/* KHUNG CHAT */
+#ai-chat-box { position: fixed; bottom: 90px; right: 20px; width: 320px; max-width: 90%; height: 500px; max-height: 60%; background: #fff; border-radius: 12px; box-shadow: 0 5px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 9999; color: #333; border: 1px solid #ddd; }
+.chat-header { background: #764ba2; color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.chat-footer { padding: 10px; border-top: 1px solid #eee; background: #fff; text-align: center; }
+.chat-msg { padding: 8px 12px; border-radius: 12px; max-width: 85%; word-wrap: break-word; line-height: 1.4; margin-bottom: 8px; }
+.msg-ai { background: #e9ecef; align-self: flex-start; border-bottom-left-radius: 2px; }
+.msg-user { background: #764ba2; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+/* [FIX] LỚP PHỦ CẮT MÀN HÌNH (Overlay) */
+#snipping-overlay { 
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0, 0, 0, 0.65); /* Màu đen trong suốt */
+    z-index: 20000; /* Cao hơn tất cả */
+    display: none; 
+    cursor: crosshair;
+    touch-action: none;
+}
+#selection-box { 
+    border: 2px dashed #00ff00; 
+    background: rgba(0, 255, 0, 0.1); 
+    position: absolute; 
+    display: none; 
+    pointer-events: none; 
+}
+#action-bar { position: absolute; display: none; z-index: 20001; gap: 10px; }
+.action-btn { padding: 10px 15px; border-radius: 20px; font-weight: bold; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; cursor: pointer; color: white; display: flex; align-items: center; gap: 5px; }
+#btn-ocr { background: #4CAF50; } 
+#btn-ai { background: #2196F3; }
