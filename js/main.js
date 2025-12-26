@@ -78,42 +78,20 @@ function setupDC(){
 
 // UI Functions
 function sendMouseMove(e){
-    // Dành cho MOUSE PC - phát hiện cuộn vs điều khiển chuột
+    // Dành cho MOUSE PC - điều khiển chuột LUÔN
     if(!isSnip && dc && document.getElementById("chkControl").checked){
-        let cY = e.clientY;
         let cX = e.clientX;
-        
-        if(lastY===0){ 
-            lastY=cY; 
-            return; 
-        }
-        
-        let diff = lastY - cY;
-        let absDiff = Math.abs(diff);
-        
-        // Nếu lăn dọc nhiều (>5px) → CUỘN
-        if(absDiff > 5){ 
-            // Tính số dòng cần cuộn (1px = ~0.3 dòng)
-            let scrollLines = Math.ceil(absDiff / 20);
-            dc.send("SCROLL:" + (diff > 0 ? scrollLines : -scrollLines));
-            console.log("📜 PC SCROLL: " + (diff > 0 ? "DOWN " : "UP ") + scrollLines + " lines");
-            lastY = cY; 
-        } 
-        // Nếu di chuyển chuột nhỏ → ĐIỀU KHIỂN CHUỘT
-        else {
-            let r=e.target.getBoundingClientRect(); 
-            dc.send("MOUSE:"+((cX-r.left)/r.width)+","+((cY-r.top)/r.height));
-        }
+        let cY = e.clientY;
+        let r=e.target.getBoundingClientRect(); 
+        dc.send("MOUSE:"+((cX-r.left)/r.width)+","+((cY-r.top)/r.height));
     }
 }
 
 function sendMove(e){
-    // Dành cho TOUCH ĐIỆN THOẠI - phát hiện cuộn vs dragging
+    // Dành cho TOUCH ĐIỆN THOẠI - lăn cuộn
     if(!isSnip && dc && document.getElementById("chkControl").checked){
         let cY = e.touches ? e.touches[0].clientY : e.clientY;
-        let cX = e.touches ? e.touches[0].clientX : e.clientX;
         
-        // TỰ ĐỘNG PHÁT HIỆN: CUỘN hay ĐIỀU KHIỂN CHUỘT
         if(lastY===0){ 
             lastY=cY; 
             return; 
@@ -122,20 +100,26 @@ function sendMove(e){
         let diff = lastY - cY;
         let absDiff = Math.abs(diff);
         
-        // Nếu lăn dọc nhiều (>5px) → CUỘN (giảm ngưỡng để dễ kích hoạt)
-        if(absDiff > 5){ 
-            // Tính số dòng cần cuộn (1px = ~0.3 dòng)
-            let scrollLines = Math.ceil(absDiff / 20);
+        // Nếu lăn dọc nhiều (>20px) → CUỘN
+        if(absDiff > 20){ 
+            let scrollLines = Math.ceil(absDiff / 25);
             dc.send("SCROLL:" + (diff > 0 ? scrollLines : -scrollLines));
-            console.log("📜 TOUCH SCROLL: " + (diff > 0 ? "DOWN " : "UP ") + scrollLines + " lines");
+            console.log("📜 SCROLL: " + (diff > 0 ? "DOWN " : "UP ") + scrollLines + " lines");
             lastY = cY; 
         } 
     }
 }
+
 // Reset lastY khi nhấc tay
 document.addEventListener("touchend", ()=>{lastY=0;});
 document.addEventListener("mouseup", ()=>{lastY=0;});
-function sendClick(e){if(!isSnip && dc && document.getElementById("chkControl").checked)dc.send("CLICK");}
+
+function sendClick(e){
+    if(!isSnip && dc && document.getElementById("chkControl").checked){
+        dc.send("CLICK");
+        lastY=0; // Reset để lần di chuyển tiếp theo được tính từ đầu
+    }
+}
 function updateStatus(t, c) { const el = document.getElementById("status"); el.innerText = t; el.style.color = c; }
 function toggleChat(){ let b=document.getElementById("ai-chat-box"); b.style.display=b.style.display==="flex"?"none":"flex"; }
 function addMsg(t,c){ let d=document.createElement("div"); d.className="chat-msg "+c; d.innerHTML=t.replace(/\n/g, "<br>"); document.getElementById("chat-content").appendChild(d); }
