@@ -1,7 +1,7 @@
 /* --- FILE MAIN.JS (THIN CLIENT VERSION) --- */
 /* Toàn bộ xử lý AI và OCR đã chuyển về Server Java */
 
-let ws, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt;
+let ws, lastY=0, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt;
 const sel=document.getElementById("selection-box"), bar=document.getElementById("action-bar");
 
 console.log("🚀 Main.js Loaded - Server-Side AI Enabled");
@@ -77,7 +77,32 @@ function setupDC(){
 }
 
 // UI Functions
-function sendMove(e){if(!isSnip && dc && document.getElementById("chkControl").checked){let r=e.target.getBoundingClientRect(); dc.send("MOUSE:"+((e.clientX-r.left)/r.width)+","+((e.clientY-r.top)/r.height));}}
+function sendMove(e){
+    if(!isSnip && dc){
+        let cY = e.touches ? e.touches[0].clientY : e.clientY;
+        let cX = e.touches ? e.touches[0].clientX : e.clientX;
+        
+        // CHẾ ĐỘ CUỘN (SCROLL MODE)
+        if(document.getElementById("chkScroll") && document.getElementById("chkScroll").checked){
+            if(lastY===0){ lastY=cY; return; }
+            let diff = lastY - cY;
+            if(Math.abs(diff) > 10){ 
+                // Gửi lệnh cuộn: >0 là xuống, <0 là lên
+                dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
+                lastY = cY; 
+            }
+        } 
+        // CHẾ ĐỘ ĐIỀU KHIỂN CHUỘT (MOUSE MODE)
+        else if(document.getElementById("chkControl").checked){
+            let r=e.target.getBoundingClientRect(); 
+            dc.send("MOUSE:"+((cX-r.left)/r.width)+","+((cY-r.top)/r.height));
+            lastY=0;
+        }
+    }
+}
+// Reset lastY khi nhấc tay
+document.addEventListener("touchend", ()=>{lastY=0;});
+document.addEventListener("mouseup", ()=>{lastY=0;});
 function sendClick(e){if(!isSnip && dc && document.getElementById("chkControl").checked)dc.send("CLICK");}
 function updateStatus(t, c) { const el = document.getElementById("status"); el.innerText = t; el.style.color = c; }
 function toggleChat(){ let b=document.getElementById("ai-chat-box"); b.style.display=b.style.display==="flex"?"none":"flex"; }
@@ -118,6 +143,7 @@ function requestHighResImage(act){
         dc.send("AI_REQ:" + coords + "|" + pPrompt);
     }
 }
+
 
 
 
