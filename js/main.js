@@ -150,6 +150,11 @@ function getDistance(touch1, touch2) {
 const container = document.getElementById("screen-container");
 
 container.addEventListener("touchstart", (e) => {
+    // Khóa zoom/pan khi đã bật Mouse Mode
+    if (document.getElementById("chkControl").checked) {
+        return;
+    }
+    
     if (e.touches.length === 2) {
         lastTouchDistance = getDistance(e.touches[0], e.touches[1]);
         console.log("📍 Pinch start, distance: " + lastTouchDistance);
@@ -158,6 +163,11 @@ container.addEventListener("touchstart", (e) => {
 }, false);
 
 container.addEventListener("touchmove", (e) => {
+    // Khóa zoom/pan khi đã bật Mouse Mode
+    if (document.getElementById("chkControl").checked) {
+        return;
+    }
+    
     if (e.touches.length === 2) {
         let currentDistance = getDistance(e.touches[0], e.touches[1]);
         let scale = currentDistance / lastTouchDistance;
