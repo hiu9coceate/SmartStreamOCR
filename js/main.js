@@ -77,25 +77,55 @@ function setupDC(){
 }
 
 // UI Functions
+function sendMouseMove(e){
+    // Dành cho MOUSE PC - phát hiện cuộn vs điều khiển chuột
+    if(!isSnip && dc && document.getElementById("chkControl").checked){
+        let cY = e.clientY;
+        let cX = e.clientX;
+        
+        if(lastY===0){ 
+            lastY=cY; 
+            return; 
+        }
+        
+        let diff = lastY - cY;
+        let absDiff = Math.abs(diff);
+        
+        // Nếu lăn dọc nhiều (>5px) → CUỘN
+        if(absDiff > 5){ 
+            dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
+            console.log("📜 PC SCROLL: " + (diff > 0 ? "DOWN" : "UP"));
+            lastY = cY; 
+        } 
+        // Nếu di chuyển chuột nhỏ → ĐIỀU KHIỂN CHUỘT
+        else {
+            let r=e.target.getBoundingClientRect(); 
+            dc.send("MOUSE:"+((cX-r.left)/r.width)+","+((cY-r.top)/r.height));
+        }
+    }
+}
+
 function sendMove(e){
+    // Dành cho TOUCH ĐIỆN THOẠI - phát hiện cuộn vs dragging
     if(!isSnip && dc && document.getElementById("chkControl").checked){
         let cY = e.touches ? e.touches[0].clientY : e.clientY;
         let cX = e.touches ? e.touches[0].clientX : e.clientX;
         
         // TỰ ĐỘNG PHÁT HIỆN: CUỘN hay ĐIỀU KHIỂN CHUỘT
-        if(lastY===0){ lastY=cY; return; }
-        let diff = lastY - cY;
+        if(lastY===0){ 
+            lastY=cY; 
+            return; 
+        }
         
-        // Nếu lăn dọc nhiều (>10px) → CUỘN
-        if(Math.abs(diff) > 10){ 
+        let diff = lastY - cY;
+        let absDiff = Math.abs(diff);
+        
+        // Nếu lăn dọc nhiều (>5px) → CUỘN (giảm ngưỡng để dễ kích hoạt)
+        if(absDiff > 5){ 
             dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
+            console.log("📜 TOUCH SCROLL: " + (diff > 0 ? "DOWN" : "UP"));
             lastY = cY; 
         } 
-        // Nếu di chuyển nhỏ → ĐIỀU KHIỂN CHUỘT
-        else {
-            let r=e.target.getBoundingClientRect(); 
-            dc.send("MOUSE:"+((cX-r.left)/r.width)+","+((cY-r.top)/r.height));
-        }
     }
 }
 // Reset lastY khi nhấc tay
