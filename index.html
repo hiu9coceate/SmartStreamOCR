@@ -24,7 +24,7 @@
 
     <div id="screen-container">
         <div id="waitingMsg" style="color:#666;">Sẵn sàng kết nối...</div>
-        <img id="remote-screen" onmousemove="sendMove(event)" onmousedown="sendClick(event)" />
+        <img id="remote-screen" onmousemove="sendMouseMove(event)" onmousedown="sendClick(event)" ontouchmove="sendMove(event)" />
     </div>
 
     <div id="ai-widget-btn" onclick="toggleChat()">✨</div>
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    `n    <script src="js/main.js?v=fix_ui_v2"></script>
+    <script src="js/main.js?v=fix_ui_v2"></script>
 </body>
 </html>
 
