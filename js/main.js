@@ -31,10 +31,10 @@ function hSig(m){
     let d = (typeof m.data==='string')?JSON.parse(m.data):m.data;
     if(d.type==="offer"){
         pc=new RTCPeerConnection({iceServers:[
-        {urls:"stun:stun.l.google.com:19302"},
-        {urls:"turn:global.turn.metered.ca:80", username:"openrelayproject", credential:"openrelayproject"},
-        {urls:"turn:global.turn.metered.ca:80?transport=tcp", username:"openrelayproject", credential:"openrelayproject"},
-        {urls:"turn:global.turn.metered.ca:443", username:"openrelayproject", credential:"openrelayproject"}
+        {urls:"stun:74.125.137.127:19302"},
+        {urls:"turn:159.89.130.155:80", username:"openrelayproject", credential:"openrelayproject"},
+        {urls:"turn:159.89.130.155:443", username:"openrelayproject", credential:"openrelayproject"},
+        {urls:"turn:159.89.130.155:443?transport=tcp", username:"openrelayproject", credential:"openrelayproject"}
     ]});
         pc.onicecandidate=e=>{if(e.candidate)ws.send(JSON.stringify({type:"SIGNAL",target:m.target,data:JSON.stringify({type:"candidate",candidate:e.candidate.candidate,sdpMid:e.candidate.sdpMid,sdpMLineIndex:e.candidate.sdpMLineIndex})}))};
         pc.ondatachannel=e=>{ dc=e.channel; setupDC(); };
@@ -123,11 +123,5 @@ function requestHighResImage(act){
         dc.send("AI_REQ:" + coords + "|" + pPrompt);
     }
 }
-
-
-
-
-
-
 
 
