@@ -90,6 +90,18 @@ function sendMouseMove(e){
     }
 }
 
+// [NEW] MOUSE WHEEL SCROLL - dành cho PC mouse
+document.addEventListener("wheel", (e) => {
+    // CHỈ hoạt động khi bật Mouse Mode
+    if(!isSnip && dc && document.getElementById("chkControl").checked){
+        // e.deltaY > 0 = lăn xuống, < 0 = lăn lên
+        let scrollLines = Math.ceil(Math.abs(e.deltaY) / 30);
+        dc.send("SCROLL:" + (e.deltaY > 0 ? scrollLines : -scrollLines));
+        console.log("🖱️ MOUSE WHEEL: " + (e.deltaY > 0 ? "DOWN " : "UP ") + scrollLines + " lines");
+        e.preventDefault();
+    }
+}, false);
+
 function sendMove(e){
     // Dành cho TOUCH ĐIỆN THOẠI - lăn cuộn
     // CHỈ hoạt động khi bật Mouse Mode
