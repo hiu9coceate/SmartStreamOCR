@@ -138,7 +138,6 @@ function zoomOut(){
 function applyZoom(){
     const img = document.getElementById("remote-screen");
     if(img) img.style.transform = "scale(" + (zoomLevel/100) + ") translate(" + panX + "px, " + panY + "px)";
-    document.getElementById("zoomLevel").innerText = zoomLevel + "%";
 }
 
 // [NEW] PINCH ZOOM HANDLING
@@ -148,55 +147,76 @@ function getDistance(touch1, touch2) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-document.addEventListener("touchstart", (e) => {
+const container = document.getElementById("screen-container");
+
+container.addEventListener("touchstart", (e) => {
     if (e.touches.length === 2) {
         lastTouchDistance = getDistance(e.touches[0], e.touches[1]);
+        console.log("📍 Pinch start, distance: " + lastTouchDistance);
+        e.preventDefault();
     }
-});
+}, false);
 
-document.addEventListener("touchmove", (e) => {
+container.addEventListener("touchmove", (e) => {
     if (e.touches.length === 2) {
         let currentDistance = getDistance(e.touches[0], e.touches[1]);
         let scale = currentDistance / lastTouchDistance;
         
         // Zoom in/out based on pinch
-        zoomLevel = Math.max(50, Math.min(300, zoomLevel * scale));
+        let newZoom = zoomLevel * scale;
+        if (newZoom >= 50 && newZoom <= 300) {
+            zoomLevel = newZoom;
+            console.log("🔍 Zoom: " + Math.round(zoomLevel) + "%");
+        }
+        
         lastTouchDistance = currentDistance;
         applyZoom();
         e.preventDefault();
     }
-    // Single touch - pan
+    // Single touch - pan khi đã zoom
     else if (e.touches.length === 1 && zoomLevel > 100) {
         let touch = e.touches[0];
-        // Store last position if not set
         if (!window.lastPanX) window.lastPanX = touch.clientX;
         if (!window.lastPanY) window.lastPanY = touch.clientY;
         
         let dx = touch.clientX - window.lastPanX;
         let dy = touch.clientY - window.lastPanY;
         
-        panX = Math.max(-200, Math.min(200, panX + dx));
-        panY = Math.max(-200, Math.min(200, panY + dy));
+        panX = Math.max(-300, Math.min(300, panX + dx));
+        panY = Math.max(-300, Math.min(300, panY + dy));
         
         window.lastPanX = touch.clientX;
         window.lastPanY = touch.clientY;
         
+        console.log("↔️ Pan X:" + panX + " Y:" + panY);
         applyZoom();
         e.preventDefault();
     }
-}, { passive: false });
+}, false);
 
-document.addEventListener("touchend", (e) => {
+container.addEventListener("touchend", (e) => {
     lastTouchDistance = 0;
     window.lastPanX = null;
     window.lastPanY = null;
-});
+    console.log("✋ Touch end");
+}, false);
 
 // [NEW] RESET ZOOM & PAN
 function resetZoom(){
     zoomLevel = 100;
     panX = 0;
     panY = 0;
+    applyZoom();
+    console.log("↺ Zoom reset to 100%");
+}
+
+// [OLD] HÀM ZOOM (chỉ dùng cho PC)
+function zoomIn(){
+    zoomLevel = Math.min(zoomLevel + 10, 300);
+    applyZoom();
+}
+function zoomOut(){
+    zoomLevel = Math.max(zoomLevel - 10, 50);
     applyZoom();
 }
 
