@@ -32,9 +32,9 @@ function hSig(m){
     if(d.type==="offer"){
         pc=new RTCPeerConnection({iceServers:[
         {urls:"stun:stun.l.google.com:19302"},
-        {urls:"turn:global.turn.metered.ca:80", username:"9f5c13b01cbb68ec05fd081e", credential:"g7xODEH16IMZz/xJ"},
-        {urls:"turn:global.turn.metered.ca:80?transport=tcp", username:"9f5c13b01cbb68ec05fd081e", credential:"g7xODEH16IMZz/xJ"},
-        {urls:"turn:global.turn.metered.ca:443", username:"9f5c13b01cbb68ec05fd081e", credential:"g7xODEH16IMZz/xJ"}
+        {urls:"turn:global.turn.metered.ca:80", username:"openrelayproject", credential:"openrelayproject"},
+        {urls:"turn:global.turn.metered.ca:80?transport=tcp", username:"openrelayproject", credential:"openrelayproject"},
+        {urls:"turn:global.turn.metered.ca:443", username:"openrelayproject", credential:"openrelayproject"}
     ]});
         pc.onicecandidate=e=>{if(e.candidate)ws.send(JSON.stringify({type:"SIGNAL",target:m.target,data:JSON.stringify({type:"candidate",candidate:e.candidate.candidate,sdpMid:e.candidate.sdpMid,sdpMLineIndex:e.candidate.sdpMLineIndex})}))};
         pc.ondatachannel=e=>{ dc=e.channel; setupDC(); };
