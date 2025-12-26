@@ -2,6 +2,8 @@
 /* Toàn bộ xử lý AI và OCR đã chuyển về Server Java */
 
 let ws, lastY=0, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt, zoomLevel=100;
+let panX=0, panY=0; // Pan offset
+let lastTouchDistance=0; // Cho pinch zoom
 const sel=document.getElementById("selection-box"), bar=document.getElementById("action-bar");
 
 console.log("🚀 Main.js Loaded - Server-Side AI Enabled");
@@ -135,8 +137,67 @@ function zoomOut(){
 }
 function applyZoom(){
     const img = document.getElementById("remote-screen");
-    if(img) img.style.transform = "scale(" + (zoomLevel/100) + ")";
+    if(img) img.style.transform = "scale(" + (zoomLevel/100) + ") translate(" + panX + "px, " + panY + "px)";
     document.getElementById("zoomLevel").innerText = zoomLevel + "%";
+}
+
+// [NEW] PINCH ZOOM HANDLING
+function getDistance(touch1, touch2) {
+    let dx = touch1.clientX - touch2.clientX;
+    let dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+document.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 2) {
+        lastTouchDistance = getDistance(e.touches[0], e.touches[1]);
+    }
+});
+
+document.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 2) {
+        let currentDistance = getDistance(e.touches[0], e.touches[1]);
+        let scale = currentDistance / lastTouchDistance;
+        
+        // Zoom in/out based on pinch
+        zoomLevel = Math.max(50, Math.min(300, zoomLevel * scale));
+        lastTouchDistance = currentDistance;
+        applyZoom();
+        e.preventDefault();
+    }
+    // Single touch - pan
+    else if (e.touches.length === 1 && zoomLevel > 100) {
+        let touch = e.touches[0];
+        // Store last position if not set
+        if (!window.lastPanX) window.lastPanX = touch.clientX;
+        if (!window.lastPanY) window.lastPanY = touch.clientY;
+        
+        let dx = touch.clientX - window.lastPanX;
+        let dy = touch.clientY - window.lastPanY;
+        
+        panX = Math.max(-200, Math.min(200, panX + dx));
+        panY = Math.max(-200, Math.min(200, panY + dy));
+        
+        window.lastPanX = touch.clientX;
+        window.lastPanY = touch.clientY;
+        
+        applyZoom();
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener("touchend", (e) => {
+    lastTouchDistance = 0;
+    window.lastPanX = null;
+    window.lastPanY = null;
+});
+
+// [NEW] RESET ZOOM & PAN
+function resetZoom(){
+    zoomLevel = 100;
+    panX = 0;
+    panY = 0;
+    applyZoom();
 }
 
 function startSnippingMode(){ 
