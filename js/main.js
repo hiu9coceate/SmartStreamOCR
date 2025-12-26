@@ -92,14 +92,8 @@ function sendMouseMove(e){
 
 function sendMove(e){
     // Dành cho TOUCH ĐIỆN THOẠI - lăn cuộn
-    // KHÓA HOÀN TOÀN khi bật Mouse Mode
-    if(document.getElementById("chkControl").checked){
-        console.log("🔒 Mouse mode ON - Touch BLOCKED");
-        e.preventDefault();
-        return;
-    }
-    
-    if(!isSnip && dc){
+    // CHỈ hoạt động khi bật Mouse Mode
+    if(!isSnip && dc && document.getElementById("chkControl").checked){
         let cY = e.touches ? e.touches[0].clientY : e.clientY;
         
         if(lastY===0){ 
