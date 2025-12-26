@@ -4,6 +4,7 @@
 let ws, lastY=0, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt, zoomLevel=100;
 let panX=0, panY=0; // Pan offset
 let lastTouchDistance=0; // Cho pinch zoom
+let isZoomTouchActive = false; // Flag để khóa zoom khi bật Mouse
 const sel=document.getElementById("selection-box"), bar=document.getElementById("action-bar");
 
 console.log("🚀 Main.js Loaded - Server-Side AI Enabled");
@@ -152,8 +153,12 @@ const container = document.getElementById("screen-container");
 container.addEventListener("touchstart", (e) => {
     // Khóa zoom/pan khi đã bật Mouse Mode
     if (document.getElementById("chkControl").checked) {
+        isZoomTouchActive = false;
+        console.log("🚫 Mouse Mode ON - Zoom/Pan LOCKED");
         return;
     }
+    
+    isZoomTouchActive = true;
     
     if (e.touches.length === 2) {
         lastTouchDistance = getDistance(e.touches[0], e.touches[1]);
@@ -164,7 +169,7 @@ container.addEventListener("touchstart", (e) => {
 
 container.addEventListener("touchmove", (e) => {
     // Khóa zoom/pan khi đã bật Mouse Mode
-    if (document.getElementById("chkControl").checked) {
+    if (!isZoomTouchActive || document.getElementById("chkControl").checked) {
         return;
     }
     
@@ -208,6 +213,7 @@ container.addEventListener("touchend", (e) => {
     lastTouchDistance = 0;
     window.lastPanX = null;
     window.lastPanY = null;
+    isZoomTouchActive = false;
     console.log("✋ Touch end");
 }, false);
 
