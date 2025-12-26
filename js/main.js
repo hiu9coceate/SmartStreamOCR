@@ -1,7 +1,7 @@
 /* --- FILE MAIN.JS (THIN CLIENT VERSION) --- */
 /* Toàn bộ xử lý AI và OCR đã chuyển về Server Java */
 
-let ws, lastY=0, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt;
+let ws, lastY=0, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt, zoomLevel=100;
 const sel=document.getElementById("selection-box"), bar=document.getElementById("action-bar");
 
 console.log("🚀 Main.js Loaded - Server-Side AI Enabled");
@@ -78,25 +78,23 @@ function setupDC(){
 
 // UI Functions
 function sendMove(e){
-    if(!isSnip && dc){
+    if(!isSnip && dc && document.getElementById("chkControl").checked){
         let cY = e.touches ? e.touches[0].clientY : e.clientY;
         let cX = e.touches ? e.touches[0].clientX : e.clientX;
         
-        // CHẾ ĐỘ CUỘN (SCROLL MODE)
-        if(document.getElementById("chkScroll") && document.getElementById("chkScroll").checked){
-            if(lastY===0){ lastY=cY; return; }
-            let diff = lastY - cY;
-            if(Math.abs(diff) > 10){ 
-                // Gửi lệnh cuộn: >0 là xuống, <0 là lên
-                dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
-                lastY = cY; 
-            }
+        // TỰ ĐỘNG PHÁT HIỆN: CUỘN hay ĐIỀU KHIỂN CHUỘT
+        if(lastY===0){ lastY=cY; return; }
+        let diff = lastY - cY;
+        
+        // Nếu lăn dọc nhiều (>10px) → CUỘN
+        if(Math.abs(diff) > 10){ 
+            dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
+            lastY = cY; 
         } 
-        // CHẾ ĐỘ ĐIỀU KHIỂN CHUỘT (MOUSE MODE)
-        else if(document.getElementById("chkControl").checked){
+        // Nếu di chuyển nhỏ → ĐIỀU KHIỂN CHUỘT
+        else {
             let r=e.target.getBoundingClientRect(); 
             dc.send("MOUSE:"+((cX-r.left)/r.width)+","+((cY-r.top)/r.height));
-            lastY=0;
         }
     }
 }
@@ -107,6 +105,21 @@ function sendClick(e){if(!isSnip && dc && document.getElementById("chkControl").
 function updateStatus(t, c) { const el = document.getElementById("status"); el.innerText = t; el.style.color = c; }
 function toggleChat(){ let b=document.getElementById("ai-chat-box"); b.style.display=b.style.display==="flex"?"none":"flex"; }
 function addMsg(t,c){ let d=document.createElement("div"); d.className="chat-msg "+c; d.innerHTML=t.replace(/\n/g, "<br>"); document.getElementById("chat-content").appendChild(d); }
+
+// [NEW] HÀM ZOOM
+function zoomIn(){
+    zoomLevel = Math.min(zoomLevel + 10, 300);
+    applyZoom();
+}
+function zoomOut(){
+    zoomLevel = Math.max(zoomLevel - 10, 50);
+    applyZoom();
+}
+function applyZoom(){
+    const img = document.getElementById("remote-screen");
+    if(img) img.style.transform = "scale(" + (zoomLevel/100) + ")";
+    document.getElementById("zoomLevel").innerText = zoomLevel + "%";
+}
 
 function startSnippingMode(){ 
     if (!document.getElementById("remote-screen").src) return alert("Chưa có ảnh!");
