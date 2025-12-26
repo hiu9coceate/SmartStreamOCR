@@ -93,8 +93,10 @@ function sendMouseMove(e){
         
         // Nếu lăn dọc nhiều (>5px) → CUỘN
         if(absDiff > 5){ 
-            dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
-            console.log("📜 PC SCROLL: " + (diff > 0 ? "DOWN" : "UP"));
+            // Tính số dòng cần cuộn (1px = ~0.3 dòng)
+            let scrollLines = Math.ceil(absDiff / 20);
+            dc.send("SCROLL:" + (diff > 0 ? scrollLines : -scrollLines));
+            console.log("📜 PC SCROLL: " + (diff > 0 ? "DOWN " : "UP ") + scrollLines + " lines");
             lastY = cY; 
         } 
         // Nếu di chuyển chuột nhỏ → ĐIỀU KHIỂN CHUỘT
@@ -122,8 +124,10 @@ function sendMove(e){
         
         // Nếu lăn dọc nhiều (>5px) → CUỘN (giảm ngưỡng để dễ kích hoạt)
         if(absDiff > 5){ 
-            dc.send("SCROLL:" + (diff > 0 ? 1 : -1));
-            console.log("📜 TOUCH SCROLL: " + (diff > 0 ? "DOWN" : "UP"));
+            // Tính số dòng cần cuộn (1px = ~0.3 dòng)
+            let scrollLines = Math.ceil(absDiff / 20);
+            dc.send("SCROLL:" + (diff > 0 ? scrollLines : -scrollLines));
+            console.log("📜 TOUCH SCROLL: " + (diff > 0 ? "DOWN " : "UP ") + scrollLines + " lines");
             lastY = cY; 
         } 
     }
