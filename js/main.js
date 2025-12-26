@@ -1,4 +1,4 @@
-﻿/* --- FILE MAIN.JS (THIN CLIENT VERSION) --- */
+/* --- FILE MAIN.JS (THIN CLIENT VERSION) --- */
 /* Toàn bộ xử lý AI và OCR đã chuyển về Server Java */
 
 let ws, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt;
@@ -30,7 +30,12 @@ function initWebSocket(url, targetId) {
 function hSig(m){
     let d = (typeof m.data==='string')?JSON.parse(m.data):m.data;
     if(d.type==="offer"){
-        pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+        pc=new RTCPeerConnection({iceServers:[
+        {urls:"stun:stun.l.google.com:19302"},
+        {urls:"turn:global.turn.metered.ca:80", username:"8692d81385b60a738987a39b", credential:"Ea9EhvNa4FO2kaHT"},
+        {urls:"turn:global.turn.metered.ca:80?transport=tcp", username:"8692d81385b60a738987a39b", credential:"Ea9EhvNa4FO2kaHT"},
+        {urls:"turn:global.turn.metered.ca:443", username:"8692d81385b60a738987a39b", credential:"Ea9EhvNa4FO2kaHT"}
+    ]});
         pc.onicecandidate=e=>{if(e.candidate)ws.send(JSON.stringify({type:"SIGNAL",target:m.target,data:JSON.stringify({type:"candidate",candidate:e.candidate.candidate,sdpMid:e.candidate.sdpMid,sdpMLineIndex:e.candidate.sdpMLineIndex})}))};
         pc.ondatachannel=e=>{ dc=e.channel; setupDC(); };
         pc.setRemoteDescription(d).then(()=>pc.createAnswer()).then(a=>pc.setLocalDescription(a)).then(()=>ws.send(JSON.stringify({type:"SIGNAL",target:m.target,data:JSON.stringify({type:"answer",sdp:pc.localDescription.sdp})})));
@@ -118,6 +123,7 @@ function requestHighResImage(act){
         dc.send("AI_REQ:" + coords + "|" + pPrompt);
     }
 }
+
 
 
 
