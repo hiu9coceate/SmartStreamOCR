@@ -1,4 +1,4 @@
-/* --- FILE MAIN.JS (THIN CLIENT VERSION) --- */
+﻿/* --- FILE MAIN.JS (THIN CLIENT VERSION) --- */
 /* Toàn bộ xử lý AI và OCR đã chuyển về Server Java */
 
 let ws, lastY=0, dc, pc, chunks=[], isSnip=false, isDraw=false, sX, sY, pAct, pPrompt, zoomLevel=100;
