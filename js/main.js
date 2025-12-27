@@ -38,6 +38,47 @@ function connect(){
     initWebSocket(SERVER_URL, target);
 }
 
+function disconnect(){
+    // Đóng WebRTC connection
+    if (dc) {
+        dc.close();
+        dc = null;
+    }
+    if (pc) {
+        pc.close();
+        pc = null;
+    }
+    if (ws) {
+        ws.close();
+        ws = null;
+    }
+    
+    // Ẩn remote screen
+    const img = document.getElementById("remote-screen");
+    img.src = "";
+    img.style.display = "none";
+    
+    // Hiện waiting message + video
+    const waitingMsg = document.getElementById("waitingMsg");
+    waitingMsg.style.display = "block";
+    
+    if (bgVideo) {
+        bgVideo.classList.add('active');
+        bgVideo.currentTime = 0;
+        bgVideo.play();
+    }
+    
+    // Reset nút
+    document.getElementById("btnConnect").disabled = false;
+    document.getElementById("btnConnect").innerText = "KẾT NỐI";
+    document.getElementById("btnDisconnect").style.display = "none";
+    
+    // Reset status
+    updateStatus("🔴", "red");
+    
+    console.log("✂️ Disconnected from remote");
+}
+
 function initWebSocket(url, targetId) {
     ws = new WebSocket(url);
     ws.onopen = () => { 
@@ -46,7 +87,11 @@ function initWebSocket(url, targetId) {
         setTimeout(() => { ws.send(JSON.stringify({ type: "SIGNAL", target: targetId, data: JSON.stringify({ type: "HELLO" }) })); }, 500); 
     };
     ws.onmessage = (e) => { try { hSig(JSON.parse(e.data)); } catch(err){} };
-    ws.onclose = () => { updateStatus("🔴 Closed", "red"); document.getElementById("btnConnect").disabled = false; };
+    ws.onclose = () => { 
+        updateStatus("🔴 Closed", "red"); 
+        document.getElementById("btnConnect").disabled = false;
+        document.getElementById("btnDisconnect").style.display = "none";
+    };
 }
 
 function hSig(m){
@@ -60,7 +105,12 @@ function hSig(m){
 }
 
 function setupDC(){
-    dc.onopen = () => { updateStatus("🟢 Streaming...", "#00ff00"); };
+    dc.onopen = () => { 
+        updateStatus("🟢 Streaming...", "#00ff00");
+        // Hiện nút Disconnect khi kết nối thành công
+        document.getElementById("btnDisconnect").style.display = "inline-block";
+        document.getElementById("targetId").disabled = true;
+    };
     dc.onmessage = e => {
         let raw = e.data;
         let isCommand = false, textCmd = "";
