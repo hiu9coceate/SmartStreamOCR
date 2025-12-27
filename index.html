@@ -5,53 +5,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NetVision AI Enterprise</title>
-    <link rel="stylesheet" href="css/style.css?v=fix_ui_v2">
-
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-
+    <!-- TOOLBAR -->
     <div class="toolbar">
-        <strong style="display:none;">NETVISION</strong>
-        <input type="text" id="targetId" placeholder="ID Máy Gửi" style="width: 120px;">
-        <button id="btnConnect" onclick="connect()">KẾT NỐI</button>
-        <label style="display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 12px;">
-            <input type="checkbox" id="chkControl"> Mouse
+        <div class="logo">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text">NETVISION</span>
+        </div>
+
+        <input type="text" id="targetId" placeholder="ID Máy Gửi" class="input-field">
+
+        <button id="btnConnect" onclick="connect()" class="btn-primary">KẾT NỐI</button>
+
+        <label class="control-group">
+            <input type="checkbox" id="chkControl">
+            <span>🖱️ Mouse</span>
         </label>
-        <button onclick="resetZoom()" style="width: 30px; font-size: 16px;">↺</button>
-        <span id="status" style="margin-left: 10px; font-size: 12px;">🔴</span>
+
+        <button class="btn-icon" onclick="resetZoom()" title="Reset Zoom">↺</button>
+
+        <span id="status" class="status-text">🔴</span>
     </div>
 
+    <!-- SCREEN CONTAINER -->
     <div id="screen-container">
-        <div id="waitingMsg" style="color:#666;">Sẵn sàng kết nối...</div>
+        <div id="waitingMsg" class="waiting-message">
+            <div class="waiting-icon">🚀</div>
+            <div class="waiting-text">Sẵn sàng kết nối đến máy tính từ xa</div>
+        </div>
         <img id="remote-screen" onmousemove="sendMouseMove(event)" onmousedown="sendClick(event)"
-            ontouchmove="sendMove(event)" />
+            ontouchmove="sendMove(event)" alt="Remote Screen" />
     </div>
 
-    <div id="ai-widget-btn" onclick="toggleChat()">✨</div>
+    <!-- AI WIDGET BUTTON -->
+    <div id="ai-widget-btn" onclick="toggleChat()">
+        <span class="widget-icon">✨</span>
+    </div>
 
+    <!-- AI CHAT BOX -->
     <div id="ai-chat-box">
-        <div class="chat-header"><span>NETVISION AI</span><span onclick="toggleChat()">✖</span></div>
-        <div class="chat-body" id="chat-content">
-            <div class="chat-msg msg-ai">Chào! hãy chọn nút dưới để cắt vùng bạn cần OCR hoặc Hỏi AI</div>
+        <div class="chat-header">
+            <span>✨ NETVISION AI</span>
+            <span class="chat-close" onclick="toggleChat()">✖</span>
         </div>
+
+        <div class="chat-body" id="chat-content">
+            <div class="chat-msg msg-ai">
+                Chào! hãy chọn nút dưới để cắt vùng bạn cần OCR hoặc Hỏi AI
+            </div>
+        </div>
+
         <div class="chat-footer">
-            <button onclick="startSnippingMode()"
-                style="width: 100%; background: #764ba2; color: white; padding: 12px; border-radius: 8px;">✂️ CẮT MÀN
-                HÌNH</button>
+            <button onclick="startSnippingMode()" class="btn-snipping">
+                ✂️ CẮT MÀN HÌNH
+            </button>
         </div>
     </div>
 
+    <!-- SNIPPING OVERLAY -->
     <div id="snipping-overlay" onmousedown="startDrag(event)" onmousemove="doDrag(event)" onmouseup="endDrag(event)"
         ontouchstart="startDrag(event)" ontouchmove="doDrag(event)" ontouchend="endDrag(event)">
+
         <div id="selection-box"></div>
+
         <div id="action-bar">
-            <button id="btn-ocr" class="action-btn" onclick="requestHighResImage('OCR')">📄 Đọc Chữ</button>
-            <button id="btn-ai" class="action-btn" onclick="requestHighResImage('AI')">✨ Hỏi AI</button>
+            <button id="btn-ocr" class="action-btn" onclick="requestHighResImage('OCR')">
+                📄 Đọc Chữ
+            </button>
+            <button id="btn-ai" class="action-btn" onclick="showAIPrompt()">
+                ✨ Hỏi AI
+            </button>
+        </div>
+
+        <!-- AI PROMPT INPUT -->
+        <div id="ai-prompt-box">
+            <div class="prompt-header">
+                <span>✨ Hỏi AI về vùng đã chọn</span>
+                <span class="prompt-close" onclick="hideAIPrompt()">✖</span>
+            </div>
+            <div class="prompt-body">
+                <input type="text" id="ai-prompt-input"
+                    placeholder="Ví dụ: Đây là thông tin gì? Giải thích nội dung này..." />
+                <div class="prompt-buttons">
+                    <button class="btn-cancel" onclick="hideAIPrompt()">Hủy</button>
+                    <button class="btn-send" onclick="sendAIRequest()">
+                        <span>Gửi</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="js/main.js?v=fix_ui_v2"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>
