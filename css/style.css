@@ -427,8 +427,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(1px);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(0px);
     z-index: 20000;
     display: none;
     cursor: crosshair;
@@ -692,27 +692,33 @@ body {
     }
     
     .control-group {
-        padding: 5px 10px;
-        font-size: 11px;
-        gap: 4px;
+        padding: 4px 8px;
+        font-size: 10px;
+        gap: 3px;
         margin-left: auto;
+        background: transparent;
+        align-items: center;
+        height: 32px;
     }
     
     .control-group input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
     
     .btn-icon {
-        width: 34px;
-        height: 34px;
-        font-size: 16px;
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
         flex-shrink: 0;
+        padding: 0;
     }
     
     .status-text, #status {
-        font-size: 11px;
-        margin-left: 4px;
+        font-size: 10px;
+        margin-left: 2px;
+        line-height: 32px;
+        height: 32px;
     }
     
     .waiting-icon {
