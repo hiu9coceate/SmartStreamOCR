@@ -239,16 +239,6 @@ function resetZoom(){
     console.log("↺ Zoom reset to 100%");
 }
 
-// [OLD] HÀM ZOOM (chỉ dùng cho PC)
-function zoomIn(){
-    zoomLevel = Math.min(zoomLevel + 10, 300);
-    applyZoom();
-}
-function zoomOut(){
-    zoomLevel = Math.max(zoomLevel - 10, 50);
-    applyZoom();
-}
-
 function startSnippingMode(){ 
     if (!document.getElementById("remote-screen").src) return alert("Chưa có ảnh!");
     toggleChat(); isSnip=true; 
@@ -256,36 +246,107 @@ function startSnippingMode(){
     sel.style.display="none"; bar.style.display="none"; 
 }
 function getPos(e){ return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY}; }
-function startDrag(e){ if(e.target.tagName==="BUTTON")return; isDraw=true; let p=getPos(e); sX=p.x; sY=p.y; sel.style.left=sX+"px"; sel.style.top=sY+"px"; sel.style.width="0"; sel.style.height="0"; sel.style.display="block"; bar.style.display="none"; if(e.type==="mousedown") document.getElementById("snipping-overlay").addEventListener("mousemove",doDrag); }
+function startDrag(e){ if(e.target.tagName==="BUTTON"||e.target.tagName==="INPUT")return; isDraw=true; let p=getPos(e); sX=p.x; sY=p.y; sel.style.left=sX+"px"; sel.style.top=sY+"px"; sel.style.width="0"; sel.style.height="0"; sel.style.display="block"; bar.style.display="none"; hideAIPrompt(); if(e.type==="mousedown") document.getElementById("snipping-overlay").addEventListener("mousemove",doDrag); }
 function doDrag(e){ if(!isDraw)return; let p=getPos(e); sel.style.width=Math.abs(p.x-sX)+"px"; sel.style.height=Math.abs(p.y-sY)+"px"; sel.style.left=Math.min(p.x,sX)+"px"; sel.style.top=Math.min(p.y,sY)+"px"; }
 function endDrag(e){ isDraw=false; if(e.type==="mouseup") document.getElementById("snipping-overlay").removeEventListener("mousemove",doDrag); let r=sel.getBoundingClientRect(); if(r.width>20){bar.style.display="flex"; bar.style.left=r.left+"px"; bar.style.top=(r.bottom+10)+"px";} }
 
-// [UPDATE] HÀM GỬI YÊU CẦU ĐƠN GIẢN
-function requestHighResImage(act){
-    let pPrompt = "";
-    if(act==="AI"){ 
-        pPrompt=prompt("Hỏi AI gì?"); 
-        if(!pPrompt)return; 
-        addMsg("👤 <b>Hỏi:</b> " + pPrompt, "msg-user"); 
+// [NEW] AI PROMPT BOX FUNCTIONS
+function showAIPrompt() {
+    const promptBox = document.getElementById("ai-prompt-box");
+    const input = document.getElementById("ai-prompt-input");
+    const rect = sel.getBoundingClientRect();
+    
+    // Ẩn action bar
+    bar.style.display = "none";
+    
+    // Hiện prompt box ở dưới vùng chọn
+    promptBox.style.display = "block";
+    
+    // Tính toán vị trí
+    let left = rect.left;
+    let top = rect.bottom + 20;
+    
+    // Kiểm tra xem có vượt ra ngoài màn hình không
+    if (left + 380 > window.innerWidth) {
+        left = window.innerWidth - 390;
     }
     
-    let img=document.getElementById("remote-screen"), r=sel.getBoundingClientRect(), ir=img.getBoundingClientRect();
-    // Tạo chuỗi tọa độ: x,y,w,h
-    const coords = ((r.left-ir.left)/ir.width).toFixed(4)+","+((r.top-ir.top)/ir.height).toFixed(4)+","+(r.width/ir.width).toFixed(4)+","+(r.height/ir.height).toFixed(4);
+    if (left < 10) {
+        left = 10;
+    }
     
-    document.getElementById("snipping-overlay").style.display="none"; isSnip=false; toggleChat(); 
+    // Kiểm tra nếu vượt dưới màn hình
+    if (top + 300 > window.innerHeight) {
+        top = rect.top - 320; // Đặt lên trên vùng chọn
+    }
     
-    if (act === "OCR") {
-        addMsg("⏳ Đang OCR (Server)...", "msg-ai");
-        dc.send("OCR_REQ:" + coords);
-    } else {
-        addMsg("⏳ Đang gửi tới Gemini Server...", "msg-ai");
-        // Gửi lệnh AI_REQ: Tọa độ | Câu hỏi
-        dc.send("AI_REQ:" + coords + "|" + pPrompt);
+    promptBox.style.left = left + "px";
+    promptBox.style.top = top + "px";
+    
+    // Auto focus vào input
+    setTimeout(() => input.focus(), 100);
+}
+
+function hideAIPrompt() {
+    const promptBox = document.getElementById("ai-prompt-box");
+    const input = document.getElementById("ai-prompt-input");
+    promptBox.style.display = "none";
+    input.value = "";
+    
+    // Hiện lại action bar nếu vẫn có vùng chọn
+    const r = sel.getBoundingClientRect();
+    if(r.width > 20) {
+        bar.style.display = "flex";
     }
 }
 
+function sendAIRequest() {
+    const input = document.getElementById("ai-prompt-input");
+    const pPrompt = input.value.trim();
+    
+    if(!pPrompt) {
+        alert("⚠️ Vui lòng nhập câu hỏi!");
+        return;
+    }
+    
+    // Thêm message vào chat
+    addMsg("👤 <b>Hỏi:</b> " + pPrompt, "msg-user");
+    
+    let img=document.getElementById("remote-screen"), r=sel.getBoundingClientRect(), ir=img.getBoundingClientRect();
+    const coords = ((r.left-ir.left)/ir.width).toFixed(4)+","+((r.top-ir.top)/ir.height).toFixed(4)+","+(r.width/ir.width).toFixed(4)+","+(r.height/ir.height).toFixed(4);
+    
+    document.getElementById("snipping-overlay").style.display="none"; 
+    isSnip=false; 
+    toggleChat();
+    hideAIPrompt();
+    
+    addMsg("⏳ Đang gửi tới Gemini Server...", "msg-ai");
+    dc.send("AI_REQ:" + coords + "|" + pPrompt);
+}
 
+// Cho phép Enter để gửi
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById("ai-prompt-input");
+    if(input) {
+        input.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                sendAIRequest();
+            }
+        });
+    }
+});
 
-
-
+// [UPDATE] HÀM GỬI YÊU CẦU CHO OCR
+function requestHighResImage(act){
+    if (act === "OCR") {
+        let img=document.getElementById("remote-screen"), r=sel.getBoundingClientRect(), ir=img.getBoundingClientRect();
+        const coords = ((r.left-ir.left)/ir.width).toFixed(4)+","+((r.top-ir.top)/ir.height).toFixed(4)+","+(r.width/ir.width).toFixed(4)+","+(r.height/ir.height).toFixed(4);
+        
+        document.getElementById("snipping-overlay").style.display="none"; 
+        isSnip=false; 
+        toggleChat();
+        
+        addMsg("⏳ Đang OCR (Server)...", "msg-ai");
+        dc.send("OCR_REQ:" + coords);
+    }
+}
