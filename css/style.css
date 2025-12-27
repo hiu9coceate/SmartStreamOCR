@@ -44,9 +44,9 @@ body {
 
 .logo-icon {
     font-size: 28px;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     animation: logoRotate 4s linear infinite;
+    display: flex;
+    align-items: center;
 }
 
 @keyframes logoRotate {
