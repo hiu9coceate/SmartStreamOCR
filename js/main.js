@@ -10,6 +10,25 @@ const sel=document.getElementById("selection-box"), bar=document.getElementById(
 console.log("🚀 Main.js Loaded - Server-Side AI Enabled");
 const SERVER_URL = "wss://niblike-shery-dooly.ngrok-free.dev";
 
+// VIDEO BACKGROUND CONTROL
+let isSoundEnabled = false;
+const bgVideo = document.getElementById("bg-video");
+const btnSound = document.getElementById("btnToggleSound");
+
+// Show video khi chưa có kết nối
+window.addEventListener('load', () => {
+    bgVideo.classList.add('active');
+});
+
+function toggleSound() {
+    if (bgVideo) {
+        isSoundEnabled = !isSoundEnabled;
+        bgVideo.muted = !isSoundEnabled;
+        btnSound.textContent = isSoundEnabled ? '🔊' : '🔇';
+        console.log("🔊 Sound: " + (isSoundEnabled ? "ON" : "OFF"));
+    }
+}
+
 function connect(){
     const target = document.getElementById("targetId").value.trim();
     if(!target) return alert("Nhập ID!");
@@ -65,6 +84,16 @@ function setupDC(){
                     const img = document.getElementById("remote-screen");
                     img.src = url; img.style.display = "block";
                     document.getElementById("waitingMsg").style.display = "none";
+                    
+                    // Ẩn video background và tắt âm thanh khi kết nối
+                    if (bgVideo) {
+                        bgVideo.classList.remove('active');
+                        bgVideo.pause();
+                        bgVideo.muted = true;
+                    }
+                    isSoundEnabled = false;
+                    if (btnSound) btnSound.textContent = '🔇';
+                    
                     img.onload = () => URL.revokeObjectURL(url);
                 }
             } 
