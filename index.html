@@ -32,10 +32,19 @@
 
     <!-- SCREEN CONTAINER -->
     <div id="screen-container">
+        <!-- BACKGROUND VIDEO -->
+        <video id="bg-video" autoplay muted loop playsinline>
+            <source src="assets/demo.mp4" type="video/mp4">
+        </video>
+
+        <!-- WAITING MESSAGE -->
         <div id="waitingMsg" class="waiting-message">
             <div class="waiting-icon">🚀</div>
             <div class="waiting-text">Sẵn sàng kết nối đến máy tính từ xa</div>
+            <button id="btnToggleSound" class="btn-sound" onclick="toggleSound()" title="Bật/Tắt âm thanh">🔇</button>
         </div>
+
+        <!-- REMOTE SCREEN IMAGE -->
         <img id="remote-screen" onmousemove="sendMouseMove(event)" onmousedown="sendClick(event)"
             ontouchmove="sendMove(event)" alt="Remote Screen" />
     </div>
