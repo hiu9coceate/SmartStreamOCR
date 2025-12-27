@@ -177,10 +177,33 @@ body {
     touch-action: pinch-zoom;
 }
 
+/* BACKGROUND VIDEO */
+#bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    display: none;
+    filter: brightness(1.1) contrast(1.1);
+}
+
+#bg-video.active {
+    display: block;
+}
+
 .waiting-message, #waitingMsg {
     text-align: center;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
     animation: fadeInUp 0.8s ease-out;
+    z-index: 2;
+    position: relative;
+    padding: 40px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
 }
 
 .waiting-icon {
@@ -192,6 +215,24 @@ body {
 .waiting-text {
     font-size: 18px;
     font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.btn-sound {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-sound:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
 }
 
 @keyframes fadeInUp {
