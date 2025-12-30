@@ -8,7 +8,7 @@ let isZoomTouchActive = false; // Flag để khóa zoom khi bật Mouse
 const sel=document.getElementById("selection-box"), bar=document.getElementById("action-bar");
 
 console.log("🚀 Main.js Loaded - Server-Side AI Enabled");
-const SERVER_URL = "wss://niblike-shery-dooly.ngrok-free.dev";
+const SERVER_URL = "wss://unloathful-bonny-villiform.ngrok-free.dev";
 
 // VIDEO BACKGROUND CONTROL
 let isSoundEnabled = false;
